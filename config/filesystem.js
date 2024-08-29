@@ -1,0 +1,1 @@
+export const supportedMimeType = ["image/png", "image/jpg", "image/jpeg", "image/gif", "image/webp", "image/svg"];

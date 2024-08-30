@@ -9,6 +9,7 @@ import {
 import prisma from "../DB/db.config.js";
 import NewsApiTransform from "../transform/newsApiTransform.js";
 import redisCache from "../DB/redis.config.js";
+import logger from "../config/logger.js";
 
 class NewsController {
   static async index(req, res) {
@@ -60,6 +61,8 @@ class NewsController {
         },
       });
     } catch (error) {
+      logger.error(error?.message);
+
       return res.status(500).json({ message: "Internal server error" });
     }
   }
@@ -113,6 +116,8 @@ class NewsController {
         .status(200)
         .json({ message: "News created successfully", news });
     } catch (error) {
+      logger.error(error?.message);
+
       if (error instanceof errors.E_VALIDATION_ERROR) {
         return res.status(400).json({ errors: error.messages });
       }
@@ -218,6 +223,11 @@ class NewsController {
         .status(200)
         .json({ message: "News updated successfully", payload });
     } catch (error) {
+      logger.error({
+        message: error?.message || "An unknown error occurred",
+        stack: error?.stack || "No stack trace available",
+      });
+
       if (error instanceof errors.E_VALIDATION_ERROR) {
         return res.status(400).json({ errors: error.messages });
       }

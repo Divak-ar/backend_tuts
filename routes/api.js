@@ -11,6 +11,9 @@ const router = Router();
 router.post("/auth/register", AuthController.register);
 router.post("/auth/login", AuthController.login);
 
+// email in auth routes
+router.get("/sendmail", AuthController.sendEmail);
+
 // profile routes
 router.get("/profile", authMiddleware, ProfileController.index);
 router.put("/profile/:id", authMiddleware, ProfileController.update);

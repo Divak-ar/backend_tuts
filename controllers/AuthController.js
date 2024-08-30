@@ -6,6 +6,9 @@ import {
 } from "../validations/authValidation.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { sendMail } from "../config/mailer.js";
+import logger from "../config/logger.js";
+import { emailQueue, emailQueueName } from "../jobs/emailQueueJob.js";
 
 class AuthController {
   static async register(req, res) {
@@ -98,6 +101,45 @@ class AuthController {
       }
 
       return res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  //   send a test email
+  static async sendEmail(req, res) {
+    try {
+      const { email } = req.query;
+
+      const payload = [
+        {
+          toMail: email,
+          subject: "Test Email",
+          body: "<h1>Use RabbitMQ or BullMQ for these cases</h1>",
+        },
+        {
+          toMail: email,
+          subject: "Test Email2",
+          body: "<h1>BullMQ makes it so we can send mutiple emails</h1>",
+        },
+        {
+          toMail: email,
+          subject: "Test Email2",
+          body: "<h1>Without overloading our servers</h1>",
+        },
+      ];
+
+      await emailQueue.add(emailQueueName, payload);
+
+      
+
+      return res.status(200).json({ message: "Email sent successfully" });
+    } catch (error) {
+      logger.error({
+        type: "Email error",
+        body: error,
+      });
+      return res
+        .status(500)
+        .json({ message: "Internal server error in sending email" });
     }
   }
 }

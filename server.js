@@ -25,6 +25,9 @@ app.get("/", (req, res) => {
   res.send("it's working fine....");
 });
 
+// Jobs import
+import "./jobs/index.js";
+
 
 // routes
 import ApiRoutes from "./routes/api.js";

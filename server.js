@@ -1,6 +1,9 @@
 import express from "express";
 import "dotenv/config";
 import fileupload from "express-fileupload";
+import helmet from "helmet";
+import cors from "cors";
+import { limiter } from "./config/ratelimiter.js";
 
 const PORT = process.env.PORT || 4203;
 
@@ -13,6 +16,10 @@ app.use(express.urlencoded({extended: false}));
 app.use(express.static("public"));
 // to use fileupload express middleware (alternative to multer)
 app.use(fileupload());
+app.use(helmet());
+app.use(cors());
+// reducing the rate of requests from a single IP to 100 requests per 30 minutes
+app.use(limiter);
 
 app.get("/", (req, res) => {
   res.send("it's working fine....");

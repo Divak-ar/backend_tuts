@@ -23,6 +23,12 @@ they are processed.
 **Redis** is an in-memory data structure store, used as a database, cache, and message broker. It improves the performance of this project
 by caching frequently accessed data.
 
+Use Docker to pull redis image or if downloaded locally then use that:
+For Dockers : run this command in project directory
+docker run -d --name redis-stack -p 6379:6379 -p 8001:8001 -e REDIS_ARGS="--requirepass mypassword" redis/redis-stack:latest
+And then run : (here 1001 and 13333 are port mapping for Redis Stack server and RedisInsight and redis/redis-stack:latest is the image name)
+docker run -p 10001:6379 -p 13333:8001 redis/redis-stack:latest
+
 ### Prisma
 
 **Prisma** is a modern ORM (Object-Relational Mapping) tool that simplifies database access. It interacts with the PostgreSQL database,

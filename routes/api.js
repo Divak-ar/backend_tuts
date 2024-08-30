@@ -3,6 +3,7 @@ import AuthController from "../controllers/AuthController.js";
 import authMiddleware from "../middleware/Authenticate.js";
 import ProfileController from "../controllers/ProfileController.js";
 import NewsController from "../controllers/NewsController.js";
+import redisCache from "../DB/redis.config.js";
 
 const router = Router();
 
@@ -15,7 +16,8 @@ router.get("/profile", authMiddleware, ProfileController.index);
 router.put("/profile/:id", authMiddleware, ProfileController.update);
 
 // news routes
-router.get("/news", NewsController.index);
+router.get("/news", redisCache.route({expire: 12*60*60}) ,NewsController.index);
+// caching the news route for 12 hours, since this route is exposed to public and is expected to be hit frequently
 router.post("/news", authMiddleware, NewsController.store);
 router.get("/news/:id", NewsController.show);
 router.put("/news/:id", authMiddleware, NewsController.update);

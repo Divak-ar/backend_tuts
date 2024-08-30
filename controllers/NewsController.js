@@ -8,6 +8,7 @@ import {
 } from "../utils/helper.js";
 import prisma from "../DB/db.config.js";
 import NewsApiTransform from "../transform/newsApiTransform.js";
+import redisCache from "../DB/redis.config.js";
 
 class NewsController {
   static async index(req, res) {
@@ -95,9 +96,17 @@ class NewsController {
       payload.user_id = req.user.id;
 
       // store news in db
-
       const news = await prisma.news.create({
         data: payload,
+      });
+
+      //   remove old cache when data is created , reason: since redis cache the data at that particular instance , so when db is updated it is not
+      //   refelcted on api that uses redis cache , so whenever data in db changes we need to remove the cache
+      redisCache.del("/api/news", (err) => {
+        if (err) {
+          console.error("Error deleting cache: ", err);
+          throw err;
+        }
       });
 
       return res
@@ -219,7 +228,6 @@ class NewsController {
 
   static async destroy(req, res) {
     try {
-
       const { id } = req.params;
       const user = req.user;
 
@@ -229,7 +237,7 @@ class NewsController {
         },
       });
 
-      console.log(news)
+      console.log(news);
 
       if (!news) {
         return res.status(404).json({ message: "News not found" });
@@ -241,7 +249,7 @@ class NewsController {
           .json({ message: "Forbidden, Unauthorized to delete this news" });
       }
 
-      console.log(user)
+      console.log(user);
 
       // delete image from filesystem
       removeImage(news.image);

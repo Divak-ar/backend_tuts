@@ -9,6 +9,9 @@ const app = express();
 // middlewares
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
+// to serve static files (public folder and it's content) on the server localhost:4000/images/imagename.jpg
+app.use(express.static("public"));
+// to use fileupload express middleware (alternative to multer)
 app.use(fileupload());
 
 app.get("/", (req, res) => {
